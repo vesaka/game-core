@@ -89,7 +89,6 @@ class Loader extends Container {
             //this.$emit(`${asset.key}_loaded`, asset);
         });
         loader.onComplete.add((loader) => {
-            console.log(loader);
             this.$emit(`loader_complete`, loader);
             this.$off('loader_complete');
             loader.onComplete.detachAll();

@@ -41,6 +41,8 @@ class Grid extends Container {
             }
         }
         
+        this.clountSlots = count;
+        
         const remain = count % slot.columns; 
         const lastRow = slot.rows - 1;
         const cellHeight = Math.abs(slot.y[1] - slot.y[0])  / slot.rows;
@@ -92,6 +94,14 @@ class Grid extends Container {
         }
         
         return this;
+    }
+    
+    realeaseAllSlots() {
+        this.takenSlots = [];
+        this.freeSlots = [];
+        for (let n = 0; n <= this.countSlots; n++) {
+            this.freeSlots.push(n);
+        }
     }
     
     randomize(delta = 2) {

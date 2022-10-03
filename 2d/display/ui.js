@@ -1,7 +1,9 @@
 import Container from '$lib/game/core/container';
 import { Text, BitmapText, Graphics } from 'pixi.js';
+import { extend } from '$lib/game/core/utils/object';
 
 class UI extends Container {
+        
     constructor(options) {
         super(options);
         this.setup = options;
