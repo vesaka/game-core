@@ -1,6 +1,6 @@
 import Container from '$lib/game/core/container';
 import { World } from 'cannon-es';
-import { Scene, LoadingManager, TextureLoader, FileLoader } from 'three';
+import { Scene, LoadingManager, TextureLoader, FileLoader, WebGLRenderer } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { Font, FontLoader } from 'three/examples/jsm/loaders/FontLoader';
 import { TTFLoader } from 'three/examples/jsm/loaders/TTFLoader';
@@ -33,7 +33,14 @@ class GameBase extends Container {
         
         window.addEventListener('resize', (ev) => this.onResize(ev));
         
-        
+        const $renderer = this.options.renderer || {};
+        $renderer.canvas = canvas;
+
+        this.renderer =  new WebGLRenderer($renderer);
+        this.onResize();
+        this.$emit('renderer_created', this.renderer);
+        this.$emit('game_init');
+
         return this;
     }
     
@@ -51,8 +58,6 @@ class GameBase extends Container {
                 for (let i in assets[type]) {
                     const singularType = type.replace(/s$/, '');
                     const callbacks = this.resolveCallbacks(singularType);
-
-                    
                     const loader = this.resolveLoader(assets[type][i], type.replace(/s$/, ''), manager);
                     
                     loader.load(`${base}${type}/${assets[type][i]}`, 
@@ -211,8 +216,10 @@ class GameBase extends Container {
         sizes.width = window.innerWidth;
         sizes.height = window.innerHeight;
         //Update camera
-        camera.aspect = sizes.width / sizes.height;
-        camera.updateProjectionMatrix();
+        if (camera) {
+            camera.aspect = sizes.width / sizes.height;
+            camera.updateProjectionMatrix();
+        }
         //Update renderer
         canvas.style.width = `${sizes.width}px`;
         canvas.style.height = `${sizes.height}px`;
