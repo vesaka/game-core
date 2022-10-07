@@ -7,7 +7,7 @@ const rand = (min, max) => {
 };
 
 const factoriel = (num) => {
-    const val = 1;
+    let val = 1;
 
     for (let i = 2; i <= num; i++)
         val = val * i;
