@@ -106,7 +106,9 @@
                 return this.value + (this.withPercents ? '%' : '');
             },
             progress() {
-                
+                if (100 === this.value) {
+                    return 100 * (this.circumference / 100);
+                }
                 return (this.value % 100) * (this.circumference / 100);
             },
             strokeColors() {
@@ -137,7 +139,7 @@
                     return `url(#${this.gradientID})`;
                 }
                 
-                return this.stroke.color;
+                return this.stroke.color || 'red';
             }
 
         },
