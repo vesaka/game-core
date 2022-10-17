@@ -10,4 +10,10 @@ const kebab = (str) => {
     }).join('');
 };
 
-export {kebab, ucfirst};
+const aprintf = (str, params) => {
+    return str.replace(/{(\d+|\w+)}/g, (match, key) => {
+        return typeof params[key] !== 'undefined' ? params[key] : match;
+    });
+}
+
+export {kebab, ucfirst, aprintf};
