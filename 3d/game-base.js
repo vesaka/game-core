@@ -3,13 +3,13 @@ import {WebGLRenderer, Scene} from 'three';
 import { Body, Vec3 } from 'cannon-es';
 import Loader from '$lib/game/core/3d/loader';
 class GameBase3D extends Container {
-    
+        
     constructor(options = {}) {
         super(options, true);
         this.$listen({
             loader: ['load', 'completed'],
             window: ['resize'],
-            game: ['init', 'ready', 'destroy'],
+            game: ['init', 'ready', 'destroy', 'start', 'over', 'reset'],
             scene: ['created', 'ready'],
             renderer: ['created', 'ready'],
             camera: ['created', 'ready']
@@ -17,7 +17,8 @@ class GameBase3D extends Container {
         const {canvas} = this;
         
         this.width = window.innerWidth;
-        this.height = window.innerHeight;        
+        this.height = window.innerHeight;
+        this.running = true;
         
         this.$set('scene', new Scene);
         this.$emit('scene_created', this.scene);
@@ -25,12 +26,12 @@ class GameBase3D extends Container {
         const $renderer = this.options.renderer || {};
         $renderer.canvas = canvas;
 
+        this.animationID = undefined;
         this.$set('renderer', new WebGLRenderer($renderer));
         
         this.$emit('renderer_created', this.renderer);
         this.$emit('game_init');
-        
-        
+                
     }
     
     add(...objects) {
@@ -51,6 +52,17 @@ class GameBase3D extends Container {
     load() {
         this.loader = new Loader();
         this.loader.load();
+    }
+    
+    destroy() {
+        this.$clear();
+        if (this.animationID) {
+            cancelAnimationFrame(this.animationID);
+            this.animationID = undefined;
+        }
+        this.renderer.clear();
+        this.$emit('game_destroy');
+        
     }
     
     loader_completed() {
