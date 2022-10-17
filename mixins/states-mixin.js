@@ -56,6 +56,14 @@ export default {
         }
         
         return null;
-    }
+    },
+    getState() {
+        if (this.states.length > 0) {
+            return this.states[0];
+        }
+        
+        return null;
+    },
+    
 }
 
