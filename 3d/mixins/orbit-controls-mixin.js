@@ -1,17 +1,9 @@
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
 
-export default {
-    camera_created() {
-        const {camera, canvas, renderer, scene} = this;
+export const useOrbitControls = (instance) => {
+    const {camera, canvas, renderer, scene} = instance;
 
-        this.controls = new OrbitControls(camera, canvas.parentNode);
-        this.controls.enableDamping = true;
-        this.controls.update();
-
-
-    },
-    
-    window_resize() {
-
-    }
-}
+    instance.controls = new OrbitControls(camera, canvas.parentNode);
+    instance.controls.enableDamping = true;
+    instance.controls.update();
+};
