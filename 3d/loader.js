@@ -13,9 +13,7 @@ class Loader extends Container {
     load() {
         const assets = this.assets;
         const base = this.settings.assets.base || '/';
-        const manager = new LoadingManager();
-        
-//        
+        const manager = new LoadingManager();        
         for (let type in assets) {
            
             for(let id in assets[type]) {
@@ -25,7 +23,7 @@ class Loader extends Container {
                 const typeLoader = this.resolveLoader(item);
                 const loader = new typeLoader(manager);
 
-                loader.load(`${base}/${type}/${item}`,
+                loader.load(`/${type}/${item}`,
                     data => {this.$emit(`${asset}_loaded`, data);},
                     () => {this.$emit(`${asset}_progress`);},
                     (error) => {this.$emit(`${asset}_error`, error);}
