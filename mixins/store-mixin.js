@@ -3,10 +3,10 @@ export default {
 
     },
     $save(key, value) {
-        this.$store.commit('model', {key, value});
+        this.$store[key] = value;
     },
     $clear(key) {
-        this.$store.commit('model', {key, value: null});
+        this.$store[key] = null;
     }
     
 }
