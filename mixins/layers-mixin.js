@@ -2,9 +2,14 @@ import { Container } from 'pixi.js';
 
 export default {
     //layers: {},
+    data() {
+        return {
+            layers: {}
+        };
+    },
     addToLayer(object, layer = null) {
         if (null === layer) {
-            const layer = object.__name + 's';
+            const layer = object.$name;
         }
 
         this.addLayer(layer);
@@ -12,7 +17,7 @@ export default {
     },
     removeFromLayer(object, layer = null) {
         if (null === layer) {
-            const layer = object.__name + 's';
+            const layer = object.$name;
         }
 
         if (this.layers[layer]) {
