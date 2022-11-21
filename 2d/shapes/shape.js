@@ -1,18 +1,55 @@
 class Shape {
+    
+    static CIRCLE = 0;
+    static POINT = 1;
+    static LINE = 2;
+    static TRIANGLE = 3;
+    static RECTANGLE = 4;
+    static POLYGON = 5;
+    static CURVE = 6;
+    static ELIPSE = 7;
+    
     constructor(options = {}) {
-        this.mass = 0;
-        this.restitution = 1.0;
-        this.friction = 0;
-        
-        
         Object.assign(this, options);
-        
-        this.__shape = this.constructor.name;
-        this.__type = Shape.prototype[this.__shape.toUpperCase()] || 0;
+        this.__shape = this.constructor.name.toLowerCase();
         return this;
     }
     
-    colide() {
+    is(shape) {
+        if (typeof shape === 'number') {
+            return shape === this.type;
+        }
+        
+        if (shape === this.__shape) {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    isOneOf(...these) {
+        for (let i in these) {
+            if (this.is(these[i])) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    colides(...args) {
+        const object = args.unshift();
+        if (typeof object !== 'object' && null !==object) {
+            return false;
+        }
+        
+        const method = `colides${object.__shape.toUpperCase()}`;
+
+        if (typeof this[method] === 'function') {
+            return this[method].apply(this, args);
+        }
+        
+        return false;
         
     }
     
@@ -21,13 +58,8 @@ class Shape {
     }
 }
 
-Shape.prototype.CIRCLE = 0;
-Shape.prototype.POINT = 1;
-Shape.prototype.LINE = 2;
-Shape.prototype.TRIANGLE = 3;
-Shape.prototype.RECTANGLE = 4;
-Shape.prototype.POLYGON = 5;
-Shape.prototype.CURVE = 6;
-Shape.prototype.ELLIPSE = 7;
+export const MAX_DISTANE = 10000;
+export const MIN_DISTANCE = -10000;
+
 export default Shape;
 
