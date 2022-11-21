@@ -1,12 +1,13 @@
 /* global Promise */
 
 import Container from '$lib/game/core/container';
-//import planck, { World, Vec2 } from 'planck';
-import { Application, Loader, InteractionManager, Container as PixiContainer } from 'pixi.js';
-import Model from '$lib/game/core/2d/models/model';
+import { Application, InteractionManager, Container as PixiContainer } from 'pixi.js';
 import FontFaceObserver from 'fontfaceobserver';
-import { getOrientation } from '$lib/game/utils/window';
-import localforage from 'localforage';
+import { raw, extend } from '$core/utils/object';
+
+import AppLoader from './loaders/loader';
+import FontLoader from './loaders/font-loader';
+import LocaleLoader from './loaders/locale-loader';
 
 const sizes = {
     width: window.innerWidth,
@@ -18,47 +19,35 @@ const cursor = {
 };
 
 const aspectRatio = sizes.width / sizes.height;
+let $this = null;
 
 class GameBase extends Container {
     constructor(options) {
-        super(options);
-        Object.assign(this, options);
+        super(options, true);
         const {container} = this;
         this.width = container.clientWidth;
         this.height = container.clientHeight;
-        this.assets = {};
         this.layers = [];
-
         if (typeof options.options === 'string') {
             this.$set('options', require(`$lib/game/${options.options}.json`));
         } else if (typeof options.options !== 'object') {
             this.$set('options', {});
         }
 
-        if (options.settings) {
-            this.$set('settings', options.settings);
-        }
+        window.addEventListener('orientationchange', this.onResize);
+        window.addEventListener('resize', this.onResize);
 
-        window.addEventListener('orientationchange', (ev) => this.onResize(ev));
-        window.addEventListener('resize', (ev) => this.onResize(ev));
-
-        this.createWorld(this.options.world);
-        this.fps = this.options.fps || 60;
-        this.app = new Application(Object.assign, {
+        this.app = new Application(Object.assign({
             width: this.options.game.width,
             height: this.options.game.height,
-            resizeTo: window,
+            //resizeTo: window,
             sharedLoader: true,
             resolution: Math.min(window.devicePixelRatio || 1, 2)
-        }, this.options.app);
+        }, this.options.app));
 
         this.$set('app', this.app);
-        this.$set('$db', localforage);
         
-        this.$set('scale', this.options.scale || 1);
-        
-        //this.$db.clear();
-        
+        this.$set('scale', this.options.scale || 1);        
         Object.assign(this.app.view.style, this.options.view.style);
         Object.assign(this.app.renderer, this.options.renderer);
         Object.assign(this.app.stage, this.options.stage);
@@ -68,148 +57,41 @@ class GameBase extends Container {
         this.app.stage.interactive = true;
         this.app.stage.hitArea = this.app.screen;
         this.doResize = null;
+        this.ready = false;
+        $this = this;
         this.onResize();
+        
+        this.$listen({
+            loader: ['complete'],
+            game: ['init', 'ready', 'destroy'],
+        });
+        this.$emit('game_init');
+        
         return this;
     }
 
     load() {
-        const loader = this.loader = Loader.shared;
-        const assets = this.options.assets;
-        loader.baseUrl = this.options.assetsBaseUrl || '/';
-
-        const $this = this;
-        for (let type in assets) {
-            if (typeof assets[type] === 'string') {
-                
-                this.loadAsset(type, assets[type]);
-            } else if (Array.isArray(assets[type])) {
-                const singularType = type.replace(/s$/, '');
-                for (let i in assets[type]) {
-                    const name = `${singularType}_${i}`;
-                    this.loadAsset(`${singularType}_${i}`, assets[type][i], singularType);
-                }
-            } else if (null !== assets[type] && typeof assets[type] === 'object') {
-
-                for (let name in assets[type]) {
-                    this.loadAsset(`${type}_${name}`, `${assets[type][name]}`, type);
-                }
-            }
-        }
-        const fonts = [];
-        let family, data = {};
-        for (let name in this.options.fonts) {
-            if (typeof this.options.fonts[name] === 'string') {
-                family = this.options.fonts[name];
-                data = {};
-            } else {
-                family = this.options.fonts[name].family;
-                data = this.options.fonts[name];
-
-            }
-            const font = new FontFaceObserver(family, data);
-            fonts.push(font.load().then((font) => {
-                $this.onFontLoaded(font, name);
-            }));
-        }
+        const { resources, progress } = this.app.loader;
+        if (progress === 100) {
+            this.app.loader.reset();
+        } 
         
-//        loader.pre((asset, next) => {
-//            this.$db.getItem(asset.name, _asset => {
-//                if (_asset) {
-//                    console.log('yes');
-//                    next(_asset);
-//                }
-//            });
-//            next();
-//        });
-
-        Promise.all(fonts).then(() => {
-
-            loader.onProgress.add((loader, asset) => {
-                $this.onProgress(loader, asset);
-            });
-            loader.onComplete.add(() => {
-                $this.onComplete();
-                $this.build();
-            });
-
-            loader.onStart.add((loader) => {
-                $this.onStart(loader);
-            });
-            loader.onLoad.add((loader) => {
-                $this.onLoad(loader);
-            });
-            loader.onError.add((loader) => {
-                $this.onError(loader);
-            });
-            
-            loader.load();
-        });
+        const appLoader = new AppLoader;
+        const fontLoader = new FontLoader;
+        const localeLoader = new LocaleLoader;
+        appLoader.preload();
+        fontLoader.load();
     }
-
-    loadAsset(name, url, type = null) {
-        const $this = this;
-
-        const method = `${type || name}_loaded`;
-        const key = type ? name.replace(`${type}_`, '') : name;
-        this.loader.add({
-            name,
-            url,
-            onComplete(asset) {
-
-                asset.key = key;
-                $this.$emit(method, asset);
-//                $this.$db.getItem(asset.name, _asset => {
-//                    if (!_asset) {
-//                        console.log('no asset');
-//                        $this.$db.setItem(asset.name, {
-//                            name: asset.name,
-//                            key: asset.key,
-//                            //data: asset.data
-//                        }, a => {
-//                            console.log(a);
-//                        });
-//                    }
-//                });
-            }
-        });
-
-
+    
+    reload() {
+        
     }
-
-    locale_loaded(asset) {
-        const {options} = this;
-
-        const locale = asset.name.replace('locale_', '');
-        if (locale === options.defaultLocale) {
-            this.$set('default_i18n', asset.data);
-        } else if (locale === options.locale) {
-            this.$set(asset.name, asset.data);
+    
+    loader_complete() {
+        if (!this.ready) {
+            this.build();
+            this.ready = true;
         }
-
-        const key = `locale_${options.locale}`;
-        if ((options.locale !== options.defaultLocale) && this.default_i18n && this[key]) {
-            this.$set('locale', Object.assign({}, this.default_i18n, this[key]));
-        } else if ((options.locale === options.defaultLocale) && this.default_i18n) {
-            this.$set('locale', this.default_i18n);
-        }
-
-    }
-
-    loadLocale(path) {
-        let i18n = {};
-        try {
-            i18n = require(`${path.replace('%s', this.options.defaultLocale)}`);
-
-            if (this.options.locale !== this.options.defaultLocale) {
-                Object.assign(i18n, `${path.replace('%s', this.options.locale)}`);
-            }
-        } catch (e) {
-            console.log(e);
-        }
-
-        this.$set('i18n', i18n);
-
-
     }
 
     createWorld(props = {}) {
@@ -220,76 +102,10 @@ class GameBase extends Container {
                     y: 0
                 }
             }, props);
-            this.$set('world', new World({
-                gravity: [attr.gravity.x, attr.gravity.y],
-            }));
-            
-
         }
     }
 
     ready() {
-
-    }
-
-    resolveCallbacks(type) {
-        const ucType = type.charAt(0).toUpperCase() + type.slice(1);
-        const callbacks = {
-            onLoad() {},
-            onProgres() {},
-            onError() {},
-            onComplete() {}
-        };
-        for (let name in callbacks) {
-            const method = `${name}${ucType}`;
-
-            if (typeof this[method] === 'function') {
-                callbacks[name] = (...args) => {
-                    this[method].apply(this, args);
-                };
-            } else {
-                delete callbacks[name];
-            }
-        }
-
-        return callbacks;
-    }
-
-    resolveLoader(asset, type, manager) {
-        const ext = asset.substr(asset.lastIndexOf(".") + 1);
-        const ucType = type.charAt(0).toUpperCase() + type.slice(1);
-        const callbacks = {
-            loaded() {},
-            progres() {},
-            error() {}
-        };
-        for (let name in callbacks) {
-            const method = `on${ucType}${name.charAt(0).toUpperCase() + name.slice(1)}`;
-
-            if (typeof this[method] === 'function') {
-                callbacks[name] = this[method];
-            }
-        }
-
-
-
-        let loader;
-
-
-        return new loader(manager);
-    }
-
-    onLoad() {
-    }
-
-    onProgress(url, itemsLoaded, itemsTotal) {
-        
-    }
-
-    onStart() {
-    }
-
-    onError() {
 
     }
 
@@ -302,68 +118,92 @@ class GameBase extends Container {
     }
 
     destroy() {
-    }
-
-    onFontLoaded(font) {
-        this.$emit('font_loaded', font);
+        this.$emit('game_destroy');
+        this.$clear();
+        this.app.loader.reset();
+        this.app.ticker.stop();
+        
+        window.removeEventListener('orientationchange', this.onResize);
+        window.removeEventListener('resize', this.onResize);
+        this.$set('app', null);
     }
 
     add(object, layer = null) {
-        this.scene.addChild(object.model);
-        this.world.addBody(object.body);
-    }
+        if (typeof layer === 'string') {
+            if (!this.layers[layer]) {
+                this.layers[layer] = new PixiContainer;
+                this.scene.addChild(this.layers[layer]);
+            }
 
-    addToLayer(object, layer) {
-        if (!this.layers[layer]) {
-            this.layers[layer] = new PixiContainer;
-            this.scene.addChild(this.layers[layer]);
+            this.layers[layer].addChild(object.model);
+        } else {
+            this.scene.addChild(object.model);
         }
-
-        this.layers[layer].addChild(object);
+    }
+    
+    addMultiple(items, layer = null) {
+        for (let i in items) {
+            this.add(items[i], layer);
+        }
     }
 
-    remove(object) {
-        this.world.removeBody(object.body);
-        this.scene.remove(object.model);
+    remove(object, layer = null) {
+        if (typeof layer === 'string' && this.layers[layer]) {
+            this.layers[layer].removeChild(object.model);
+        } else {
+            this.scene.removeChild(object.model);
+        }
     }
 
     getKeyCharCode(e) {
         let keynum;
-        if (window.event) { // IE                  
+        if (window.event) {               
             keynum = e.keyCode;
-        } else if (e.which) { // Netscape/Firefox/Opera                 
+        } else if (e.which) {        
             keynum = e.which;
         }
 
         return keynum;
     }
 
-    onResize() {
-        const {app, options, container} = this;
+    onResize(ev) {
+        if (!$this) {
+            return;
+        }
+        if (ev) {
+            ev.stopPropagation();
+            ev.stopPropagation();
+        }
+        const {app, options, container} = $this;
 
         const canvas = app.view;
-        clearTimeout(this.doResize);
-        this.doResize = setTimeout((ev) => {
+        clearTimeout($this.doResize);
+        $this.doResize = setTimeout((ev) => $this.resizeCanvas(ev), 300);
 
-            const {innerWidth: w, innerHeight: h} = window;
-            //const {clientWidth: w, clientHeight: h} = container;
-            const ratio = Math.round(canvas.width / canvas.height * 100) / 100;
+    }
+    
+    resizeCanvas(ev) {
+        const {app, options, container, ui} = this;
+        const {clientWidth: w, clientHeight: h} = container;
+        const ratio = (app.renderer.width / app.renderer.height).toFixed(2);
 
-            if (w / h >= ratio) {
-                sizes.width = w / ratio;
-                sizes.height = h;
-            } else {
-                sizes.width = w;
-                sizes.height = Math.round(w / ratio);
-            }
-//
-//            //Update renderer
-            app.view.style.width = `${sizes.width}px`;
-            app.view.style.height = `${Math.min(canvas.height, sizes.height)}px`;
-//              app.renderer.resize(container.clientWidth, container.clientHeight);
-            this.$emit('window_resize', ev);
-        }, 300);
-
+        if (w / h >= ratio) {
+            sizes.width = w / ratio;
+            sizes.height = h; 
+        } else {
+            sizes.width = w;
+            sizes.height = (w / ratio).toFixed(2);
+        }
+        
+        app.view.style.width = `${sizes.width}px`;
+        app.view.style.height = `${sizes.height}px`;
+        
+        this.$emit('window_resize', ev);
+    }
+    
+    getContainerSize() {
+        const {clientWidth: w, clientHeight: h} = this.container;
+        return {w, h};
     }
 
     absorbEvent(ev) {
