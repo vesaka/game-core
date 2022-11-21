@@ -4,7 +4,7 @@
         xmlns:xlink="http://www.w3.org/1999/xlink"
         class="h-full w-full" 
         :viewBox="`0 0 ${size} ${size}`"
-        style="width: 50px;height: 50px"
+        :style="{ width: size + 'px',height: size + 'px' }"
         version="1.1"
         >
         <linearGradient :id="gradientID" gradientUnits="userSpaceOnUse" 
@@ -28,6 +28,7 @@
             :stroke-width="stroke.width"
             :stroke-dasharray="`${progress}, ${circumference}`"
             />
+        <slot :half-size="halfSize" :size="size" :font="font" :stroke="stroke">
         <text x="50%" y="50%"
               text-anchor="middle"
               :fill="font.color"
@@ -37,13 +38,14 @@
               :stroke-width="font.strokeWidth"
               dy=".4em"
               v-html="displayText"></text>
+        </slot>
     </svg>
 </template>
 <script>
     export default {
         props: {
             size: {
-                type: Number,
+                type: [Number, String],
                 default: 100,
             },
             options: {
