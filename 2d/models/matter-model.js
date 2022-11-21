@@ -1,6 +1,6 @@
 import Container from '$lib/game/core/container';
 
-import { Graphics, GraphicsGeometry, MeshMaterial, Point } from 'pixi.js';
+import { Graphics, Point } from 'pixi.js';
 import { Body, Bodies, Vector } from 'matter-js';
 import { parse } from 'js-svg-path';
 const HALF_PI = Math.PI / 2;
