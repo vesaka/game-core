@@ -1,4 +1,3 @@
-import { EventDispatcher } from 'three';
 import Action from '$lib/game/core/utils/patterns/action';
 
 class Container {
@@ -17,6 +16,14 @@ class Container {
         if (typeof this.mixins === 'object' || Array.isArray(this.mixins)) {
             for (let i in this.mixins) {
                 for (let attribute in this.mixins[i]) {
+                    if ('data' === attribute) {
+                        if (typeof this.mixins[i].data === 'function') {
+                            Object.assign(this, this.mixins[i].data() || {});
+                        }
+                        
+                        continue;
+                    }
+                    
                     if (typeof this[attribute] === 'function' && typeof this.mixins[i][attribute] === 'function') {
                         this.$on(attribute, (...args) => { this.mixins[i][attribute].apply(this, args); });
                     } else {
