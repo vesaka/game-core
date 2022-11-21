@@ -43,6 +43,6 @@ export default {
     removeLayers(layers) {
         let $this = this;
         layers.forEach(layer => $this.removeLayer(layer));
-    }    
+    }
 };
 
