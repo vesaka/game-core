@@ -1,7 +1,7 @@
 /* global require */
 
 /** Register plugins */
-const requirePlugins = require.context('$v/game/plugins', false, /[a-z]\w+(-plugin.js)$/);
+const requirePlugins = require.context('$lib/game/plugins', false, /[a-z]\w+(-plugin.js)$/);
 
 const usePlugins = function (app) {
 
