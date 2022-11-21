@@ -1,17 +1,13 @@
 import Container from '$lib/game/core/container';
 import { Text, BitmapText, Graphics } from 'pixi.js';
-import { extend } from '$lib/game/core/utils/object';
-
+import { extend, deepGet } from '$core/utils/object';
+import { fixed } from '$core/utils/math';
 class UI extends Container {
         
     constructor(options) {
         super(options);
         this.setup = options;
         Object.assign(this, options);
-//        if (this.options.ui) {
-//            this.style = Object.assign({}, this.options.ui.style || {}, options.style = {});
-//        }
-
         let filterMethod;
         for (let attribute in options) {
             filterMethod = `filter_${attribute}`;
@@ -19,12 +15,16 @@ class UI extends Container {
                 this[attribute] = this[filterMethod](options[attribute]);
             }
         }
-        
+        this.$name = this.constructor.name.toLowerCase();
         return this;
     }
     
     styles(style = {}) {
         return Object.assign({}, this.setup.style, style);
+    }
+    
+    filter_style(style) {
+        return extend(defaultStyle, style);
     }
     
     createText(text, style = {}) {
@@ -49,10 +49,34 @@ class UI extends Container {
         return options;
     }
     
+    translate(key, def = null) {
+        return deepGet(this.locale, key, def);
+    }
+    
+    normalizePlacement() {
+        const { width, height } = this.app.screen;
+        const props = ['x', 'width', 'y', 'height']
+        for (let i in props) {
+            const key = props[i];
+            if (typeof this[key] === 'number' && (this[key] >= 0 && this[key] <= 1)) {
+                if (['y', 'height'].includes(key)) {
+                    this[key] = fixed(this[key] * height, 2);
+                } else {
+                    this[key] = fixed(this[key] * width, 2);
+                }
+            }
+        }
+    }
+    
     static setDefaultStyle(style = {}) {
         UI.prototype.defaultStyle = style;
     }
 }
+
+const defaultStyle = {};
+export const useDefaultStyle = style => {
+    Object.assign(defaultStyle, style);
+};
 
 UI.prototype.defaultStyle = {};
 
