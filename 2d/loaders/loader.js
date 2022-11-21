@@ -5,12 +5,11 @@ class Loader extends Container {
         super();
 
         this.$set('loader', this.app.loader);
-        const events = {
+
+        this.$listen({
             fonts: ['loaded']
-        };
-
-        this.$listen(events);
-
+        });
+        this.didLoad = false;
         return this;
     }
 
@@ -44,36 +43,28 @@ class Loader extends Container {
         if (this.loader.resources[name]) {
             return;
         }
-        
+
         this.loader.add({
             name,
             url,
             onComplete(asset) {
                 asset.key = key;
                 $this.$emit(method, asset);
-//                $this.$db.getItem(asset.name, _asset => {
-//                    if (!_asset) {
-//                        $this.$db.setItem(asset.name, {
-//                            name: asset.name,
-//                            key: asset.key,
-//                            //data: asset.data
-//                        }, a => {
-//                            console.log(a);
-//                        });
-//                    }
-//                });
             }
         });
 
     }
     
     load() {
+        if (this.didLoad) {
+            return;
+        }
         const loader = this.loader;
 
         loader.onProgress.add((loader, asset) => {
             this.$emit('loader_progress', loader);
             this.$emit(`${asset.key}_progress`, asset, loader);
-            
+
         });
         
         loader.onError.add((error, asset) => {
@@ -95,6 +86,11 @@ class Loader extends Container {
          });
 
         loader.load();
+        this.didLoad = true;
+    }
+    
+    reload() {
+        
     }
     
     fonts_loaded() {

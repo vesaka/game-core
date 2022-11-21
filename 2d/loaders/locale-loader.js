@@ -1,6 +1,6 @@
 import Loader from './loader';
 
-import { deepMerge, raw } from '$lib/game/core/utils/object';
+import { deepMerge, raw, extend } from '$lib/game/core/utils/object';
 
 class LocaleLoader extends Loader {
     constructor() {
@@ -16,15 +16,16 @@ class LocaleLoader extends Loader {
     
     locale_select(code) {
         this.updateLocale(code);
-        
     }
     
     updateLocale(code) {
         const { locales, options: { defaultLocale } } = this;
         const i18n = raw(locales[code] || {});
-        
-        this.$store.commit('model', {key: 'locale', value: code});
-        
+        if (typeof this.$store.commit === 'function') {
+            this.$store.commit('model', {key: 'locale', value: code});
+        } else {
+            this.$store.locale = code;
+        }
         this.$set('locale', code !== defaultLocale 
                     ? deepMerge(raw(locales[defaultLocale]), raw(locales[code] || {}))
                     : raw(locales[defaultLocale]));

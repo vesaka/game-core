@@ -9,7 +9,9 @@ class FontLoader extends Container {
     load() {
         const loader = this.app.loader;
         const fonts = [];
+        const fontsToLoad = Object.keys(this.options.fonts).length;
         let family, data = {};
+        let fontsLoaded = 0;
         for (let name in this.options.fonts) {
             if (typeof this.options.fonts[name] === 'string') {
                 family = this.options.fonts[name];
@@ -17,15 +19,19 @@ class FontLoader extends Container {
             } else {
                 family = this.options.fonts[name].family;
                 data = this.options.fonts[name];
-
             }
+
             const font = new FontFaceObserver(family, data);
-            fonts.push(font.load().then(font => this.$emit.bind(this, 'font_loaded', font, name)));
+            fonts.push(font.load().then(font => { 
+                this.$emit.bind(this, 'font_loaded', font, name);
+                fontsLoaded++;
+                if (fontsLoaded >= fontsToLoad) {
+                    this.$emit('fonts_loaded');
+                    this.$off('fonts_loaded');
+                }
+            }));
         }
-        
-        return Promise.all(fonts)
-                .then(() => {this.$emit('fonts_loaded')})
-                .catch(err => {});
+
     }
 }
 
