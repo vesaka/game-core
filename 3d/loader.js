@@ -1,13 +1,11 @@
 import Container from '$lib/game/core/container';
 import {LoadingManager, FileLoader, TextureLoader} from 'three';
-import { TTFLoader } from 'three/examples/jsm/loaders/TTFLoader';
-import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
-import { FBXLoader } from 'three/examples/jsm/loaders/OBJLoader';
-import { Font, FontLoader } from 'three/examples/jsm/loaders/FontLoader';
 
 class Loader extends Container {
-    constructor() {
+    loaders = {};
+    constructor(loaders = {}) {
         super();
+        this.loaders = loaders;
         return this;
     }
     
@@ -16,17 +14,19 @@ class Loader extends Container {
         const base = this.settings.assets.base || '/';
         const manager = new LoadingManager();        
         for (let type in assets) {
-           
             for(let id in assets[type]) {
                 const item = assets[type][id];
 
                 const asset = isNaN(id) ? id : type.replace(/s$/, '');
-                const typeLoader = this.resolveLoader(item);
+                const ext = item.substr(item.lastIndexOf(".") + 1);
+                const typeLoader = this.loaders[ext] || FileLoader;
                 const loader = new typeLoader(manager);
 
-                loader.load(`/${type}/${item}`,
-                    data => {this.$emit(`${asset}_loaded`, data);},
-                    () => {this.$emit(`${asset}_progress`);},
+                loader.load(`/${item}`,
+                    data => {
+                        this.$emit(`${asset}_loaded`, data);
+                    },
+                    (obj) => {this.$emit(`${asset}_progress`, obj);},
                     (error) => {this.$emit(`${asset}_error`, error);}
                 );
             }
@@ -36,12 +36,16 @@ class Loader extends Container {
             this.$emit('loader_started', url, itemsLoaded, itemsTotal);
         };
         
-        manager.onLoad = () => {
+        manager.onLoad = (a, b) => {
+            
             this.$emit('loader_completed');
         };
         
-        manager.onProgres = (url, itemsLoaded, itemsTotal) => {
-            this.$emit('loader_progress', url, itemsLoaded, itemsTotal);
+        manager.onProgress = (url, itemsLoaded, itemsTotal) => {
+            this.$emit('loader_progress', {
+                url, itemsLoaded, itemsTotal,
+                progress: Math.round(itemsLoaded / itemsTotal * 100)
+            });
         };
         
         manager.onError = () => {
@@ -51,14 +55,16 @@ class Loader extends Container {
     
     resolveLoader(asset, type) {
         const ext = asset.substr(asset.lastIndexOf(".") + 1);
+        if (this.loaders[ext]) {
+            return this.loaders[ext];
+        }
 
-        
         let loader;
         if ('ttf' === ext) {
             loader = TTFLoader;
         } else if ('obj' === ext) {
             loader = OBJLoader;
-        }  else if ('fbx' === ext) {
+        } else if ('fbx' === ext) {
             loader = FBXLoader;
         } else if (['jpg', 'png', 'tif'].indexOf(ext) > -1) {
             loader = TextureLoader;
@@ -67,7 +73,7 @@ class Loader extends Container {
         }
         
         
-        return loader;
+        return FileLoader;
     }
     
     onLoad() {
