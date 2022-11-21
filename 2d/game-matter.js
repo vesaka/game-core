@@ -5,9 +5,7 @@ import { Composite, Engine, Render, Bodies, Runner, World } from 'matter-js';
 import { Application, InteractionManager, Container as PixiContainer, Ticker } from 'pixi.js';
 
 import localforage from 'localforage';
-import { getOrientation } from '$lib/game/utils/window';
-import { getKeyCode } from '$lib/game/core/utils/events';
-import { deepMerge, deepGet, deepSet, raw } from '$lib/game/utils/object';
+import { getKeyCode } from '$core/utils/events';
 import AppLoader from './loaders/loader';
 import FontLoader from './loaders/font-loader';
 import LocaleLoader from './loaders/locale-loader';
@@ -232,25 +230,18 @@ class GameMatter extends Container {
         const {app, options, container, ui} = this;
         const {clientWidth: w, clientHeight: h} = container;
         const ratio = (app.renderer.width / app.renderer.height).toFixed(2);
-        //const ratio = Math.min(w / app.renderer.width, h / app.renderer.height);
 
         if (w / h >= ratio) {
             sizes.width = w / ratio;
             sizes.height = h; 
         } else {
-           // console.log('yuck');
             sizes.width = w;
             sizes.height = (w / ratio).toFixed(2);
         }
         
-//        app.renderer.resize(Math.ceil(w * ratio), Math.ceil(h * ratio));
-//        this.ui.scale.x = this.scene.ascale.x = this.ui.scale.y = this.scene.scale.y = ratio
         app.view.style.width = `${sizes.width}px`;
         app.view.style.height = `${sizes.height}px`;
         
-        if (ui) {
-            //ui.pivot.set(app.renderer.width / 2, app.renderer.height / 2);
-        }
         this.$emit('window_resize', ev);
     }
 
