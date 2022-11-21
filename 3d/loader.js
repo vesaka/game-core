@@ -58,20 +58,6 @@ class Loader extends Container {
         if (this.loaders[ext]) {
             return this.loaders[ext];
         }
-
-        let loader;
-        if ('ttf' === ext) {
-            loader = TTFLoader;
-        } else if ('obj' === ext) {
-            loader = OBJLoader;
-        } else if ('fbx' === ext) {
-            loader = FBXLoader;
-        } else if (['jpg', 'png', 'tif'].indexOf(ext) > -1) {
-            loader = TextureLoader;
-        } else {
-            loader = FileLoader;
-        }
-        
         
         return FileLoader;
     }
