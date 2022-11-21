@@ -2,6 +2,7 @@ import Container from '$lib/game/core/container';
 import {LoadingManager, FileLoader, TextureLoader} from 'three';
 import { TTFLoader } from 'three/examples/jsm/loaders/TTFLoader';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
+import { FBXLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { Font, FontLoader } from 'three/examples/jsm/loaders/FontLoader';
 
 class Loader extends Container {
@@ -57,6 +58,8 @@ class Loader extends Container {
             loader = TTFLoader;
         } else if ('obj' === ext) {
             loader = OBJLoader;
+        }  else if ('fbx' === ext) {
+            loader = FBXLoader;
         } else if (['jpg', 'png', 'tif'].indexOf(ext) > -1) {
             loader = TextureLoader;
         } else {
