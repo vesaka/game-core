@@ -6,10 +6,13 @@ export const getOrientation = () => {
     var orientation = (screen.orientation || {}).type
             || screen.mozOrientation
             || screen.msOrientation;
-    if (orientation.indexOf(LANDSCAPE) > -1) {
-        return LANDSCAPE;
-    } else if (orientation.indexOf('portrait') > -1) {
-        return PORTRAIT;
+    
+    if (orientation) {
+        if (orientation.indexOf(LANDSCAPE) > -1) {
+            return LANDSCAPE;
+        } else if (orientation.indexOf(PORTRAIT) > -1) {
+            return PORTRAIT;
+        }
     }
 
     if (window.innerWidth > window.innerHeight) {
