@@ -1,6 +1,6 @@
 export const toggleFullscreen = (canvas) => {
     const fullscreenElement = isFullscreen();
-    
+
     if (!fullscreenElement) {
         if (canvas.requestFullscreen) {
             canvas.requestFullscreen();
@@ -15,7 +15,7 @@ export const toggleFullscreen = (canvas) => {
         }
 
     } else {
-        
+
         if (canvas.exitFullscreen) {
             canvas.exitFullscreen();
         } else if (canvas.mozRequestFullscreen) {
@@ -27,7 +27,17 @@ export const toggleFullscreen = (canvas) => {
         } else if (canvas.msExitFullscreen) {
             canvas.msExitFullscreen();
         }
-        document.exitFullscreen();
+
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        }
+
     }
 };
 
