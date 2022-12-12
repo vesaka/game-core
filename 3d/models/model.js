@@ -1,6 +1,6 @@
 import Container from '$lib/game/core/container';
 
-import { Mesh, MeshBasicMaterial, BoxBufferGeometry } from 'three';
+import { Mesh, MeshBasicMaterial, BoxBufferGeometry, Box3 } from 'three';
 import { World, Body, Box, Vec3, Material, ContactMaterial } from 'cannon-es';
 
 const HALF_PI = Math.PI / 2;
@@ -113,6 +113,15 @@ class Model extends Container {
         this.updatePosition();
     }
     
+    getSize(object = null) {
+        const box = new Box3().setFromObject(object || this.model);        
+        return {
+            width: (box.max.x - box.min.x) / 2,
+            height: (box.max.y - box.min.y) / 2,
+            depth: (box.max.z - box.min.z) / 2
+        };
+    }
+    
     setPosition(x = 0, y = 0, z = 0) {
         this.body.position.set(x, y, z);
         this.model.position.copy(this.body.position);
@@ -151,7 +160,7 @@ class Model extends Container {
         return this;
     }
     
-    setYZ(x, y) {
+    setYZ(y, z) {
         this.body.position.y = y;
         this.body.position.z = z;
         this.updatePosition();
@@ -293,7 +302,6 @@ class Model extends Container {
     update() {
         this.model.position.copy(this.body.position);
         this.model.quaternion.copy(this.body.quaternion);
-        //this.body.quaternion.setFromAxisAngle(new Vec3(this.model.rotation.x, this.model.rotation.y, this.model.rotation.z), HALF_PI);
         return this;
     }
     
