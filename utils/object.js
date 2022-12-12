@@ -1,12 +1,12 @@
-const isSafeKey = (key) => {
+export const isSafeKey = (key) => {
     return key !== '__proto__' && key !== 'prototype' && key !== 'constructor';
 };
 
-const isObject = (item) => {
+export const isObject = (item) => {
     return (item && (typeof item === 'object') && !Array.isArray(item));
 };
 
-const deepMerge = (target, ...sources) => {
+export const deepMerge = (target, ...sources) => {
     if (!sources.length)
         return target;
     const source = sources.shift();
@@ -28,7 +28,7 @@ const deepMerge = (target, ...sources) => {
 
 };
 
-const extend = (target, ...sources) => {
+export const extend = (target, ...sources) => {
     if (!sources.length)
         return target;
     
@@ -51,14 +51,14 @@ const extend = (target, ...sources) => {
 
 };
 
-const raw = (target) => {
+export const raw = (target) => {
     if (!isObject(target)) {
         target = {};
     }
     return JSON.parse(JSON.stringify(target));
 };
 
-const deepGet = (obj, path, defaultValue = null) => {
+export const deepGet = (obj, path, defaultValue = null) => {
     if (!isObject(obj)) {
         return defaultValue;
     }
@@ -74,7 +74,7 @@ const deepGet = (obj, path, defaultValue = null) => {
     return obj;
 };
 
-const deepSet = (obj, path, value) => {
+export const deepSet = (obj, path, value) => {
     let i, key, keys = path.split('.');
     for (i = 0; i < keys.length - 1; i++) {
         key = keys[i];
@@ -88,6 +88,3 @@ const deepSet = (obj, path, value) => {
     obj[keys[i]] = value;
     return value;
 };
-
-
-export {isObject, deepMerge, raw, deepGet, deepSet, extend};
