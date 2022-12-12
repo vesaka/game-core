@@ -1,6 +1,5 @@
 import Container from '$lib/game/core/container';
 import {WebGLRenderer, Scene} from 'three';
-import { Body, Vec3 } from 'cannon-es';
 import Loader from '$lib/game/core/3d/loader';
 class GameBase3D extends Container {
         
@@ -36,7 +35,6 @@ class GameBase3D extends Container {
     
     add(...objects) {
         objects.forEach(object => {
-            this.world.addBody(object.body);
             this.scene.add(object.model);
         });
         
@@ -44,7 +42,6 @@ class GameBase3D extends Container {
     
     remove(...objects) {
         objects.forEach(object => {
-            this.world.removeBody(object.body);
             this.scene.remove(object.model);
         });
     }
@@ -71,16 +68,6 @@ class GameBase3D extends Container {
     
     window_resize() {
         
-    }
-    getKeyCharCode(e) {
-        let keynum;
-        if(window.event) { // IE                  
-          keynum = e.keyCode;
-        } else if(e.which){ // Netscape/Firefox/Opera                 
-          keynum = e.which;
-        }
-        
-        return keynum;
     }
     
 };
