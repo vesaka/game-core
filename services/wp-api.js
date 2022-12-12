@@ -31,6 +31,15 @@ class WpApi extends Api {
         return axios.post(API_BASE + url, applyDefaultParams(params));
     }
     
+    static $post(url, params = {}) {
+        return axios.post(API_BASE + url, params);
+    }
+    
+    static autologin(params = {}) {
+        params.rest_route = 'autologin';
+        return axios.get(API_URL + '?' + qs(applyDefaultParams(params)));
+    }
+    
     static login(params) {
         params.rest_route = 'auth';
         return axios.post(API_URL + '?' + qs(applyDefaultParams(params)));
@@ -41,15 +50,24 @@ class WpApi extends Api {
         return axios.post('?' + qs(applyDefaultParams(params)));
     }
     
+    static resetPassword(params, method = 'post') {
+        params.rest_route = 'user/reset_password';
+        return axios[method](API_URL + '?' + qs(applyDefaultParams(params)));
+    }
+    
     static setBearer(token) {
         if (token) {
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         }
     }
     
-    static logout() {
-        return axios.post(API_URL + '?' + qs(applyDefaultParams({rest_route: 'auth/revoke'})));
+    static logout(token) {
         axios.defaults.headers.common['Authorization'] = ``;
+        return axios.post(API_URL + '?' + qs(applyDefaultParams({
+            rest_route: 'auth/revoke',
+            jwt: token
+        })));
+        
     }
 }
 
