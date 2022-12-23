@@ -77,12 +77,17 @@ class Container {
                 if (typeof this[method] === 'function') {
                     this.$on(method, this[method].bind(this));
                 }
-                
                 this.__events.push(method);
             }
-            
+        }
+    }
+    
+    $unlisten() {
+        for (let i in this.__events) {
+            this.$off(this.__events[i]);
         }
         
+        this.__events = [];
     }
     
     $clear() {
