@@ -103,6 +103,14 @@ const normalize = (v, vmin, vmax, tmin, tmax) => {
     return tmin + (((nv - vmin) / (vmax - vmin)) * (tmax - tmin));
 }
 
+export const round = (num, to) => {
+    return Math.round(num / to) * to;
+};
+
+export const clamp = (value, min, max) => {
+    return Math.min(Math.max(value, min), max);
+}
+
 export {
 between, rand, factoriel, degrees,
         radians, binom, radius, rotate, fixed,
