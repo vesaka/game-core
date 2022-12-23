@@ -1,5 +1,10 @@
 
 export default {
+    data() {
+        return {
+            states: []
+        };
+    },
     is() {
         const actions = this.states;
         const args = Array.isArray(arguments[0]) ? arguments[0] : arguments;
