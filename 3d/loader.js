@@ -10,8 +10,14 @@ class Loader extends Container {
     }
     
     load() {
-        const assets = this.assets;
-        const base = this.settings.assets.base || '/';
+        const { assets, settings, loaders } = this;
+        
+        if (Object.values(assets).length < 1) {
+            this.$emit('loader_completed');
+            return;
+        }
+
+        const base = settings.assets.base || '/';
         const manager = new LoadingManager();        
         for (let type in assets) {
             for(let id in assets[type]) {
@@ -19,7 +25,7 @@ class Loader extends Container {
 
                 const asset = isNaN(id) ? id : type.replace(/s$/, '');
                 const ext = item.substr(item.lastIndexOf(".") + 1);
-                const typeLoader = this.loaders[ext] || FileLoader;
+                const typeLoader = loaders[ext] || FileLoader;
                 const loader = new typeLoader(manager);
 
                 loader.load(`/${item}`,
