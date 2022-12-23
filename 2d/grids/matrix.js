@@ -122,6 +122,14 @@ class Matrix {
 
     }
     
+    countAvailableSlots() {
+        let freeSlots = 0;
+        this.eachSlot(({available, locked}) => {
+            freeSlots += Number(true === available && false === locked);
+        });
+        return freeSlots;
+    }
+    
     getDefaultSlotSize() {
         const { width, height } = this.slots[0][0];
         return { width, height };
