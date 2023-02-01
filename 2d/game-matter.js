@@ -2,7 +2,7 @@
 
 import Container from '$lib/game/core/container';
 import { Composite, Engine, Render, Bodies, Runner, World } from 'matter-js';
-import { Application, InteractionManager, Container as PixiContainer, Ticker } from 'pixi.js';
+import { Application, Container as PixiContainer, Ticker } from 'pixi.js';
 
 import localforage from 'localforage';
 import { getKeyCode } from '$core/utils/events';
