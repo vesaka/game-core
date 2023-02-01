@@ -2,8 +2,9 @@
 
 import Api from './api.js';
 import axios from 'axios';
+import cookie from 'js-cookie';
 
-const API_URL = env.url;
+const API_URL = import.meta.env.VITE_BASE_URL;
 
 axios.defaults.withCredentials = false;
 axios.defaults.headers.post['Content-Type'] = 'application/json';

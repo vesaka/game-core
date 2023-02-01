@@ -6,7 +6,7 @@ import axios from 'axios';
 axios.defaults.withCredentials = false;
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 
-const API_URL = env.url;
+const API_URL = import.meta.env.VITE_BASE_URL;
 
 let DEFAULT_LOCALE = 'en';
 const applyDefaultParams = (params) => {
