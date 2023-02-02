@@ -25,7 +25,7 @@ class Collection extends Container {
         if (typeof condition === 'function') {
             return this.filter(condition).count();
         }
-        
+
         return this.items.length;
     }
 
@@ -41,7 +41,7 @@ class Collection extends Container {
         this.items.push(item);
         return this;
     }
-    
+
     get(key = 0) {
         return this.items[key];
     }
@@ -50,7 +50,7 @@ class Collection extends Container {
         this.items.splice(at, 1);
         return this;
     }
-    
+
     first(condition) {
         for (let i in this.items) {
             const stop = condition(this.items[i], i);
@@ -77,6 +77,20 @@ class Collection extends Container {
             }
         }
         return this;
+    }
+
+    reduce(callback, start) {
+        let accumulator = start;
+        const len = this.count();
+        for (let i = 0; i < len; i++) {
+            if (accumulator) {
+                accumulator = callback(accumulator, this.items[i], i);
+            } else {
+                accumulator = this.items[i];
+            }
+        }
+
+        return accumulator;
     }
 
     filter(condition = null) {
