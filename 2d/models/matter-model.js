@@ -27,7 +27,7 @@ class Model extends Container {
         this.model = this.createModel();
         this.body = this.createBody();
         //Body.setCentre(this.body, true);
-        this.$name = this.constructor.name.toLowerCase();
+        this.$name = this.body.label = this.constructor.name.toLowerCase();
         return this;
     }
 
