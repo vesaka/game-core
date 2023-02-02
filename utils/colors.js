@@ -24,6 +24,10 @@ export const hex2bin = (hex) => {
     return ("00000000" + (parseInt(hex, 16)).toString(2)).substr(-8);
 };
 
+export const hex2dec = (hex) => {
+    return parseInt(hex.replace(/^#/, ''), 16);
+};
+
 export const hex2base = hex => {
     let r = parseInt(hex.slice(1, 3), 16),
         g = parseInt(hex.slice(3, 5), 16),
