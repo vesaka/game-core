@@ -25,25 +25,29 @@ class Matrix {
 
     generateSlots() {
         const {rows, columns, width, height, offset} = this;
-        const cellWidth = fixed(width / rows, 2);
-        const cellHeight = fixed(height / columns, 2);
+        const cellWidth = fixed(width / columns, 2);
+        const cellHeight = fixed(height / rows, 2);
         
         for (let x = 0; x < rows; x++) {
             if (!this.slots[x]) {
                 this.slots[x] = {};
             }
+            
             for (let y = 0; y < columns; y++) {
                 this.slots[x][y] = {
                     x, y,
-                    ax: offset.x + fixed(x * cellWidth, 2), ay: offset.y + fixed(y * cellHeight, 2),
-                    bx: offset.x + fixed((x + 1) * cellWidth, 2), by: offset.y + fixed(y * cellHeight, 2),
-                    cx: offset.x + fixed(x * cellWidth, 2), cy: offset.y + fixed((y + 1) * cellHeight, 2),
-                    dx: offset.x + fixed((x + 1) * cellWidth, 2), dy: offset.y + fixed((y + 1) * cellHeight, 2),
+                    ax: offset.x + fixed(y * cellWidth, 2), ay: offset.y + fixed(x * cellHeight, 2),
+                    bx: offset.x + fixed((y + 1) * cellWidth, 2), by: offset.y + fixed(x * cellHeight, 2),
+                    cx: offset.x + fixed(y * cellWidth, 2), cy: offset.y + fixed((x + 1) * cellHeight, 2),
+                    dx: offset.x + fixed((y + 1) * cellWidth, 2), dy: offset.y + fixed((x + 1) * cellHeight, 2),
                     width: cellWidth,
                     height: cellHeight,
                     available: true,
                     locked: false
                 };
+                
+                const { ax, ay } = this.slots[x][y];
+                console.log({ x, y, ax, ay});
             }
         }
     }
