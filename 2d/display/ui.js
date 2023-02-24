@@ -1,7 +1,8 @@
 import Container from '$lib/game/core/container';
 import { Text, BitmapText, Graphics } from 'pixi.js';
-import { extend, deepGet } from '$core/utils/object';
+import { extend, deepGet, isObject } from '$core/utils/object';
 import { fixed } from '$core/utils/math';
+import { hex2dec } from '$core/utils/colors';
 class UI extends Container {
         
     constructor(options) {
@@ -20,15 +21,57 @@ class UI extends Container {
     }
     
     styles(style = {}) {
-        return Object.assign({}, this.setup.style, style);
+        return extend(this.setup.style, style);
     }
     
     filter_style(style) {
-        return extend(defaultStyle, style);
+        const styles = extend(defaultStyle, style);
+        const colorKeys = ['fill', 'color', 'background'];
+        for (let key in styles) {
+            
+            if (colorKeys.includes(key) && typeof styles[key] === 'string') {
+                styles[key] = hex2dec(styles[key]);
+            }
+            
+            if (key === 'line' && isObject(styles[key])) {
+                for (let lineKey in styles[key]) {
+                    if (colorKeys.includes(key) && typeof styles[key][lineKey] === 'string') {
+                        styles[key][lineKey] = hex2dec(styles[key][lineKey]);
+                    }
+                }
+            }
+        }
+        return styles;
+    }
+    
+    filter_size(size) {
+        const { width, height } = this.app.screen;
+        if (size.width >= 0 && size.width <= 1) {
+            size.width *= width;
+        }
+        
+        if (size.height >= 0 && size.height <= 1) {
+            size.height *= height;
+        }
+        
+        return size;
+    }
+    
+    filter_position(position) {
+        const { width, height } = this.app.screen;
+        if (position.x >= -1 && position.x <= 1) {
+            position.x *= width;
+        }
+        
+        if (position.y >= -1 && position.y <= 1) {
+            position.y *= height;
+        }
+        
+        return position;
     }
     
     createText(text, style = {}) {
-        return new Text(text, Object.assign({}, this.style, style));
+        return new Text(text, extend(this.style, style));
     }
     
     createBitmapText(text, style = {}) {
