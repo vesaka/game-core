@@ -50,6 +50,10 @@ class Collection extends Container {
         this.items.splice(at, 1);
         return this;
     }
+    
+    find(condition) {
+        return this.first(condition);
+    }
 
     first(condition) {
         for (let i in this.items) {
@@ -111,6 +115,83 @@ class Collection extends Container {
         }
 
         return this;
+    }
+    
+    min(property = null) {
+        if (0 === this.items.length) {
+            return null;
+        }
+        
+        let min, callback;
+        
+        if (['string', 'number'].includes(typeof property)) {
+            min = this.items[0][property];
+            callback = item => {
+                if (min > item[property]) {
+                    min = item[property];
+                }
+            };
+        } else if (typeof property === 'function') {
+            min = property(this.items[0]);
+            callback = property;
+        } else {
+            min = this.items[0];
+            callback = item => {
+                if (min > item) {
+                    min = item;
+                }
+            };
+        }
+        
+        this.each(callback);
+        
+        return min;
+    }
+    
+    max(property = null) {
+        if (0 === this.items.length) {
+            return null;
+        }
+        
+        let max, callback;
+        
+        if (['string', 'number'].includes(typeof property)) {
+            max = this.items[0][property];
+            callback = item => {
+                if (max < item[property]) {
+                    max = item[property];
+                }
+            };
+        } else if (typeof property === 'function') {
+            max = property(this.items[0]);
+            callback = property;
+        } else {
+            max = this.items[0];
+            callback = item => {
+                if (max < item) {
+                    max = item;
+                }
+            };
+        }
+        
+        this.each(callback);
+        
+        return max;
+    }
+    
+    unique(property = null) {
+        let items = [];
+        if (typeof property === 'function') {
+            items = this.items.map(property);
+        } else if (['string', 'number'].includes(typeof property)) {
+            items = this.items.map(item => item[property]);
+        } else {
+            items = this.items;
+        }
+        
+        return items.filter((value, index, self) => {
+            return self.indexOf(value) === index;
+        });
     }
 
     sum(arg) {
