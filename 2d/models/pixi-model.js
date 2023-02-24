@@ -1,4 +1,4 @@
-import Container from '$lib/game/core/container';
+import Container from '$core/container';
 
 import { Graphics, Point } from 'pixi.js';
 const HALF_PI = Math.PI / 2;

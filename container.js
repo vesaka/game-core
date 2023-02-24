@@ -1,4 +1,4 @@
-import Action from '$lib/game/core/utils/patterns/action';
+import Action from '$core/utils/patterns/action';
 
 class Container {
 

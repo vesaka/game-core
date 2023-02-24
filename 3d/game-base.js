@@ -1,7 +1,7 @@
-import Container from '$lib/game/core/container';
+import Container from '$core/container';
 import {WebGLRenderer, Scene} from 'three';
 import { Body, Vec3 } from 'cannon-es';
-import Loader from '$lib/game/core/3d/loader';
+import Loader from '$core/3d/loader';
 class GameBase3D extends Container {
         
     constructor(options = {}) {

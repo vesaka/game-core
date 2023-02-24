@@ -1,6 +1,6 @@
 import {Scene, PerspectiveCamera, WebGLRenderer, Clock} from 'three';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
-import Container from '$lib/game/core/container';
+import Container from '$core/container';
 
 const sizes = {
     width: window.innerWidth,

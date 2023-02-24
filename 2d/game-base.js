@@ -1,6 +1,6 @@
 /* global Promise */
 
-import Container from '$lib/game/core/container';
+import Container from '$core/container';
 import { Application, InteractionManager, Container as PixiContainer } from 'pixi.js';
 import FontFaceObserver from 'fontfaceobserver';
 import { raw, extend } from '$core/utils/object';

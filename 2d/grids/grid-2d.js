@@ -1,4 +1,4 @@
-import Container from '$lib/game/core/container';
+import Container from '$core/container';
 import { between } from '$core/utils/math';
 
 class Grid2D extends Container {

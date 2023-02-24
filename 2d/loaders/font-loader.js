@@ -1,4 +1,4 @@
-import Container from '$lib/game/core/container';
+import Container from '$core/container';
 import FontFaceObserver from 'fontfaceobserver';
 class FontLoader extends Container {
     constructor() {

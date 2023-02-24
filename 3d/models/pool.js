@@ -1,5 +1,5 @@
-import Container from '$lib/game/core/container';
-import {raw, deepMerge} from '$lib/game/core/utils/object';
+import Container from '$core/container';
+import {raw, deepMerge} from '$core/utils/object';
 
 class Pool extends Container {
     

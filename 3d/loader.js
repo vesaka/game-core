@@ -1,4 +1,4 @@
-import Container from '$lib/game/core/container';
+import Container from '$core/container';
 import {LoadingManager, FileLoader, TextureLoader} from 'three';
 
 class Loader extends Container {

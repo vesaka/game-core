@@ -1,4 +1,4 @@
-import Container from '$lib/game/core/container';
+import Container from '$core/container';
 class Collection extends Container {
     constructor(options) {
 

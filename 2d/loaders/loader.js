@@ -1,5 +1,5 @@
-import Container from '$lib/game/core/container';
-import { deepMerge, deepGet, deepSet, raw, isObject } from '$lib/game/core/utils/object';
+import Container from '$core/container';
+import { deepMerge, deepGet, deepSet, raw, isObject } from '$core/utils/object';
 class Loader extends Container {
     constructor() {
         super();

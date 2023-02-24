@@ -1,4 +1,4 @@
-import { getKeyCode } from '$lib/game/core/utils/events';
+import { getKeyCode } from '$core/utils/events';
 
 export default {
         

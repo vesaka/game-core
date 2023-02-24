@@ -1,6 +1,6 @@
 import Loader from './loader';
 
-import { deepMerge, raw, extend } from '$lib/game/core/utils/object';
+import { deepMerge, raw, extend } from '$core/utils/object';
 
 class LocaleLoader extends Loader {
     constructor() {

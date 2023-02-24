@@ -1,4 +1,4 @@
-import Container from '$lib/game/core/container';
+import Container from '$core/container';
 
 class Grid extends Container {
     constructor(preset) {

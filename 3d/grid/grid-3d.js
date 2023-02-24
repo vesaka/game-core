@@ -1,4 +1,4 @@
-import Container from '$lib/game/core/container';
+import Container from '$core/container';
 import { raw, extend } from '$core/utils/object.js';
 
 class Grid3D extends Container {

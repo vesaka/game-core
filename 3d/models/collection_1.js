@@ -1,5 +1,5 @@
-import Container from '$lib/game/core/container';
-import {deepMerge, raw, isObject} from '$lib/game/core/utils/object';
+import Container from '$core/container';
+import {deepMerge, raw, isObject} from '$core/utils/object';
 
 class Collection extends Container {
     constructor(options) {

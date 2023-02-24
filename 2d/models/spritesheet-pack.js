@@ -1,4 +1,4 @@
-import Container from '$lib/game/core/container';
+import Container from '$core/container';
 import { Texture, Spritesheet, Graphics } from 'pixi.js';
 import { extend } from '$core/utils/object';
 

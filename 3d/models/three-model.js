@@ -1,4 +1,4 @@
-import Container from '$lib/game/core/container';
+import Container from '$core/container';
 
 import { Mesh, MeshBasicMaterial, BoxBufferGeometry, Box3, Vector3 } from 'three';
 

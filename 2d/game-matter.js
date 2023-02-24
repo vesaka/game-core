@@ -1,6 +1,6 @@
 /* global Promise */
 
-import Container from '$lib/game/core/container';
+import Container from '$core/container';
 import { Composite, Engine, Render, Bodies, Runner, World } from 'matter-js';
 import { Application, Container as PixiContainer, Ticker } from 'pixi.js';
 

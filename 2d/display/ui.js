@@ -1,4 +1,4 @@
-import Container from '$lib/game/core/container';
+import Container from '$core/container';
 import { Text, BitmapText, Graphics } from 'pixi.js';
 import { extend, deepGet, isObject } from '$core/utils/object';
 import { fixed } from '$core/utils/math';

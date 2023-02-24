@@ -1,4 +1,4 @@
-import Container from '$lib/game/core/container';
+import Container from '$core/container';
 
 import { Mesh, MeshBasicMaterial, BoxBufferGeometry } from 'three';
 import { World, Body, Box, Vec3, Material, ContactMaterial } from 'cannon-es';

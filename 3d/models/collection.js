@@ -1,6 +1,6 @@
-import Container from '$lib/game/core/container';
-import {raw, deepMerge} from '$lib/game/core/utils/object';
-import StatesMixin from '$lib/game/core/mixins/states-mixin';
+import Container from '$core/container';
+import {raw, deepMerge} from '$core/utils/object';
+import StatesMixin from '$core/mixins/states-mixin';
 
 class Collection extends Container {
     constructor(options) {
