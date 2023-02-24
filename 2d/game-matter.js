@@ -65,7 +65,7 @@ class GameMatter extends Container {
             this.$set('runner', Runner.create());
         }
         this.$set('world', this.engine.world);
-        //this.$db.clear();
+
         Object.assign(this.app.view.style, this.options.view.style);
         Object.assign(this.app.renderer, this.options.renderer);
         Object.assign(this.app.stage, this.options.stage);
@@ -151,6 +151,11 @@ class GameMatter extends Container {
     }
 
     add(object, layer = null) {
+        if (true === object.__group__) {
+            this.addGroup(object, layer);
+            return;
+        }
+        
         if (typeof layer === 'string') {
             if (!this.layers[layer]) {
                 this.layers[layer] = new PixiContainer;
@@ -166,6 +171,15 @@ class GameMatter extends Container {
 
         Composite.add(this.engine.world, object.body);
     }
+    
+    addGroup(group, layer = null) {
+        
+        for (let key in group.components) {
+            this.add(group.components[key], layer);
+        }
+        
+        Composite.add(this.engine.world, group.constraints);
+    }
 
     addMultiple(items, layer = null) {
         for (let i in items) {
@@ -174,11 +188,21 @@ class GameMatter extends Container {
     }
 
     remove(object, layer = null) {
+        if (true === object.__group__) {
+            this.removeGroup(object, layer);
+            return;
+        }
         Composite.remove(this.engine.world, object.body);
         if (typeof layer === 'string' && this.layers[layer]) {
             this.layers[layer].removeChild(object.model);
         } else {
             this.scene.removeChild(object.model);
+        }
+    }
+    
+    removeGroup(group, layer) {
+        for (let key in group.components) {
+            this.remove(group.components[key], layer);
         }
     }
     
