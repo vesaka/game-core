@@ -47,7 +47,6 @@ class Matrix {
                 };
                 
                 const { ax, ay } = this.slots[x][y];
-                console.log({ x, y, ax, ay});
             }
         }
     }
