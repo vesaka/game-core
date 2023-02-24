@@ -109,6 +109,14 @@ export const round = (num, to) => {
 
 export const clamp = (value, min, max) => {
     return Math.min(Math.max(value, min), max);
+};
+
+export const randFromArray = (value) => {
+    if (Array.isArray(value)) {
+        value = rand(Number(value[0]), Number(value[1]));
+    }
+    
+    return value;
 }
 
 export {
