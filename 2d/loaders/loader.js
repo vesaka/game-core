@@ -17,7 +17,7 @@ class Loader extends Container {
 
     preload() {
         const {assets, options} = this;
-        this.loader.baseUrl = options.assetsBaseUrl || '/';
+        this.loader.baseUrl = (window.env && window.env.assetsBaseUrl) || options.assetsBaseUrl || '/assets/';
         for (let type in assets) {
             if (typeof assets[type] === 'string') {
 
