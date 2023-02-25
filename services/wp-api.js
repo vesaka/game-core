@@ -1,13 +1,13 @@
-import Api from './api.js';
 import axios from 'axios';
 
 axios.defaults.withCredentials = false;
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 
-const API_URL = import.meta.env.VITE_BASE_URL;
-const API_BASE = import.meta.env.VITE_API_BASE;
-const AUTH_KEY = import.meta.env.VITE_AUTH_KEY;
-const WP_JWT = import.meta.env.VITE_WP_JWT;
+const env = window.env || {};
+const API_URL = env.apiUrl || '/';
+const API_BASE = env.apiBase || '';
+const AUTH_KEY = env.authKey || '';
+const WP_JWT = env.jwt || '';
 const qs = params => Object.keys(params).map(key => key + '=' + params[key]).join('&');
 axios.defaults.baseURL = API_URL;
 
@@ -20,7 +20,7 @@ const applyDefaultParams = (params) => {
     });
 };
 
-class WpApi extends Api {
+class WpApi {
     static get(url, params = {}) {
         params.AUTH_KEY = AUTH_KEY;
         params.locale = DEFAULT_LOCALE;

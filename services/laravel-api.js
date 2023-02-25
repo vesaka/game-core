@@ -1,10 +1,10 @@
 /* global env */
 
-import Api from './api.js';
 import axios from 'axios';
 import cookie from 'js-cookie';
 
-const API_URL = import.meta.env.VITE_BASE_URL;
+const env = window.env || {};
+const API_URL = env.apiUrl || '/';
 
 axios.defaults.withCredentials = false;
 axios.defaults.headers.post['Content-Type'] = 'application/json';
@@ -21,7 +21,7 @@ const applyDefaultParams = (params) => {
     });
 };
 
-class LaravelApi extends Api {
+class LaravelApi {
     static get(url, params = {}) {
         return axios.get(url, params);
     }

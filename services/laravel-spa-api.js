@@ -1,12 +1,11 @@
 /* global env */
 
-import Api from './api.js';
 import axios from 'axios';
-
 axios.defaults.withCredentials = false;
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 
-const API_URL = import.meta.env.VITE_BASE_URL;
+const env = window.env || {};
+const API_URL = env.apiUrl || '/';
 
 let DEFAULT_LOCALE = 'en';
 const applyDefaultParams = (params) => {
@@ -16,7 +15,7 @@ const applyDefaultParams = (params) => {
     });
 };
 
-class LaravelApi extends Api {
+class LaravelApi {
     static get(url, params = {}) {
         params.AUTH_KEY = AUTH_KEY;
         params.locale = DEFAULT_LOCALE;
