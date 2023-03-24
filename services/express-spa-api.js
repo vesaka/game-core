@@ -1,37 +1,31 @@
 /* global env */
 
 import axios from 'axios';
+import cookie from 'js-cookie';
+
 axios.defaults.withCredentials = false;
 axios.defaults.headers.post['Content-Type'] = 'application/json';
+axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
-const env = window.env || {};
-const API_URL = env.apiUrl || '/';
 
 let DEFAULT_LOCALE = 'en';
 const applyDefaultParams = (params) => {
     return Object.assign(params, {
         locale: DEFAULT_LOCALE,
-        rest_route: WP_JWT + (params.rest_route || '')
     });
 };
 
-class LaravelApi {
+class ExpressApi {
+    static setBaseUrl(url) {
+        axios.defaults.baseURL = url;
+    }
+    
     static get(url, params = {}) {
-        params.AUTH_KEY = AUTH_KEY;
-        params.locale = DEFAULT_LOCALE;
-        return axios.get(API_BASE + url, params);
+        return axios.get(url, params);
     }
     
     static post(url, params = {}) {
-        return axios.post(API_BASE + url, applyDefaultParams(params));
-    }
-    
-    static login(params) {
-        return axios.post(API_URL + '?' + applyDefaultParams(params));
-    }
-    
-    static register(params) {
-        return axios.post('?' + qs(applyDefaultParams(params)));
+        return axios.post(url, applyDefaultParams(params));
     }
     
     static setBearer(token) {
@@ -43,8 +37,15 @@ class LaravelApi {
     static logout() {
         axios.defaults.headers.common['Authorization'] = ``;
     }
+    
+    static getCsrfToken(url = 'csrf-token') {
+        axios.get(url).then(res => {
+            axios.defaults.headers.common['X-CSRF-TOKEN'] = res.data;
+        });
+    }
+    
 }
 
-export default LaravelApi;
+export default ExpressApi;
 
 
