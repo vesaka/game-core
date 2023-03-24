@@ -11,7 +11,6 @@ let DEFAULT_LOCALE = 'en';
 const applyDefaultParams = (params) => {
     return Object.assign(params, {
         locale: DEFAULT_LOCALE,
-        rest_route: WP_JWT + (params.rest_route || '')
     });
 };
 
@@ -42,6 +41,10 @@ class LaravelApi {
     
     static logout() {
         axios.defaults.headers.common['Authorization'] = ``;
+    }
+    
+    static updateCsrf(token) {
+        axios.defaults.headers.common['X-CSRF-Token'] = token;
     }
 }
 
