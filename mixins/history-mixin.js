@@ -7,6 +7,12 @@ export default {
         addEntry(entry) {
             this.history.push(entry)
         },
+        addEvent(type, data) {
+            this.history.push(Object.assign({
+                event: type,
+                at: Math.round(new Date().getTime() / 1000)
+            }));
+        },
         clearAll() {
             this.history = [];
         },
