@@ -46,6 +46,10 @@ class LaravelApi {
     static updateCsrf(token) {
         axios.defaults.headers.common['X-CSRF-Token'] = token;
     }
+
+    static handshake(path) {
+        axios.get(path || '/sanctum/csrf-cookie');
+    }
 }
 
 export default LaravelApi;
