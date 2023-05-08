@@ -1,12 +1,11 @@
 /* global env */
 
 import axios from 'axios';
-axios.defaults.withCredentials = false;
+axios.defaults.withCredentials = true;
 axios.defaults.headers.post['Content-Type'] = 'application/json';
-
-const env = window.env || {};
-const API_URL = env.apiUrl || '/';
-
+const axiosInstance = axios.create({
+    withCredentials: true,
+});
 let DEFAULT_LOCALE = 'en';
 const applyDefaultParams = (params) => {
     return Object.assign(params, {
@@ -15,28 +14,45 @@ const applyDefaultParams = (params) => {
 };
 
 class LaravelApi {
+
+    static connect(options) {
+
+        axiosInstance.defaults.baseURL = options.url
+        axiosInstance.defaults.withCredentials = true;
+        axios.defaults.baseURL = options.url;
+        return axiosInstance.get('/sanctum/csrf-cookie', {withCredentials: true})
+        .then((response) => {
+            console.log(response);
+        });
+        return this;
+    }
+
+    static setBaseUrl(url) {
+        axios.defaults.baseURL = url;
+        return this;
+    }
+
     static get(url, params = {}) {
-        params.AUTH_KEY = AUTH_KEY;
-        params.locale = DEFAULT_LOCALE;
-        return axios.get(API_BASE + url, params);
+        return axios.get(url, params);
     }
     
     static post(url, params = {}) {
-        return axios.post(API_BASE + url, applyDefaultParams(params));
+        return axiosInstance.post(url, params, {withCredentials: true});
     }
     
-    static login(params) {
-        return axios.post(API_URL + '?' + applyDefaultParams(params));
+    static async login(params) {
+        return axios.post('login-test', params).then(console.log);
     }
     
     static register(params) {
-        return axios.post('?' + qs(applyDefaultParams(params)));
+        return axios.post('?' + applyDefaultParams(params));
     }
     
     static setBearer(token) {
         if (token) {
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         }
+        return this;
     }
     
     static logout() {
@@ -45,10 +61,18 @@ class LaravelApi {
     
     static updateCsrf(token) {
         axios.defaults.headers.common['X-CSRF-Token'] = token;
+        return this;
     }
 
     static handshake(path) {
-        axios.get(path || '/sanctum/csrf-cookie');
+        axios.get(path || '/sanctum/csrf-cookie', { withCredentials: true })
+        .then(response => {
+            if (path) {
+                //axios.defaults.headers.common['X-CSRF-TOKEN'] = response.data;
+            }
+            console.log(response.headers);
+        });
+        return this;
     }
 }
 
