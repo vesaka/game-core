@@ -1,30 +1,15 @@
 /* global env */
 
 import axios from 'axios';
-axios.defaults.withCredentials = true;
-axios.defaults.headers.post['Content-Type'] = 'application/json';
-const axiosInstance = axios.create({
-    withCredentials: true,
-});
-let DEFAULT_LOCALE = 'en';
-const applyDefaultParams = (params) => {
-    return Object.assign(params, {
-        locale: DEFAULT_LOCALE,
-    });
-};
 
 class LaravelApi {
 
     static connect(options) {
-
-        axiosInstance.defaults.baseURL = options.url
-        axiosInstance.defaults.withCredentials = true;
-        axios.defaults.baseURL = options.url;
-        return axiosInstance.get('/sanctum/csrf-cookie', {withCredentials: true})
-        .then((response) => {
-            console.log(response);
-        });
-        return this;
+        
+        axios.defaults.baseURL = options.url
+        axios.defaults.withCredentials = true;
+        axios.defaults.headers.common['Content-Type'] = 'application/json';
+        return axios.get('/sanctum/csrf-cookie');
     }
 
     static setBaseUrl(url) {
@@ -37,15 +22,19 @@ class LaravelApi {
     }
     
     static post(url, params = {}) {
-        return axiosInstance.post(url, params, {withCredentials: true});
+        return axios.post(url, params, { 
+            headers: {
+                //'Access-Control-Allow-Credentials': true,
+            }
+         });
     }
     
     static async login(params) {
-        return axios.post('login-test', params).then(console.log);
+        return axios.post('login', params).then(console.log);
     }
     
     static register(params) {
-        return axios.post('?' + applyDefaultParams(params));
+        return axios.post('register', params);
     }
     
     static setBearer(token) {
@@ -64,16 +53,6 @@ class LaravelApi {
         return this;
     }
 
-    static handshake(path) {
-        axios.get(path || '/sanctum/csrf-cookie', { withCredentials: true })
-        .then(response => {
-            if (path) {
-                //axios.defaults.headers.common['X-CSRF-TOKEN'] = response.data;
-            }
-            console.log(response.headers);
-        });
-        return this;
-    }
 }
 
 export default LaravelApi;
