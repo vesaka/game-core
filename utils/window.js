@@ -38,3 +38,34 @@ export const isPortrait = () => {
     return PORTRAIT === getOrientation();
 };
 
+const _w = window || {};
+const _s = window.screen || {};
+const _b = document.body;
+const _d = document.documentElement;
+
+export const getSize = () => {
+    var width = Math.max(0, _w.innerWidth || _d.clientWidth || _b.clientWidth || 0);
+    var height = Math.max(0, _w.innerHeight || _d.clientHeight || _b.clientHeight || 0);
+
+    return {
+        width: width,
+        height: height,
+        centerx: width / 2,
+        centery: height / 2,
+        ratio: width / height,
+    };
+}
+
+export const getMouse = (e) => {
+    var x = Math.max(0, e.pageX || e.clientX || 0);
+    var y = Math.max(0, e.pageY || e.clientY || 0);
+    var s = getSize();
+
+    return {
+        x: x,
+        y: y,
+        centerx: (x - s.centerx),
+        centery: (y - s.centery),
+    };
+}
+
