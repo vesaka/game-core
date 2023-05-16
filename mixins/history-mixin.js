@@ -11,7 +11,7 @@ export default {
             this.history.push(Object.assign({
                 event: type,
                 at: Math.round(new Date().getTime() / 1000)
-            }));
+            }, data));
         },
         clearAll() {
             this.history = [];
