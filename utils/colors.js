@@ -20,7 +20,7 @@ export const randomHex = (min, max) => {
 };
 
 export const hex2bin = (hex) => {
-    return ("00000000" + (parseInt(hex, 16)).toString(2)).substr(-8);
+    return ("00000000" + (parseInt(hex, 16)).toString(2)).substring(-8);
 };
 
 export const hex2dec = (hex) => {
