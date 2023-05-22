@@ -1,5 +1,4 @@
 /* global env */
-
 import axios from 'axios';
 
 class LaravelApi {
@@ -9,11 +8,23 @@ class LaravelApi {
         axios.defaults.baseURL = options.url
         axios.defaults.withCredentials = true;
         axios.defaults.headers.common['Content-Type'] = 'application/json';
+        if(typeof options.params === 'object' && null !== options.params) {
+            axios.defaults.params = options.params;
+        }
+
         return axios.get('/sanctum/csrf-cookie');
     }
 
     static setBaseUrl(url) {
         axios.defaults.baseURL = url;
+        return this;
+    }
+
+    static setDefaultParams(params) {
+        if(typeof params === 'object' && null !== params) {
+            axios.defaults.params = params;
+        }
+        console.log(axios.defaults.params);
         return this;
     }
 
