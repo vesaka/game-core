@@ -172,7 +172,6 @@ class GameBase extends Container {
         }
         if (ev) {
             ev.stopPropagation();
-            ev.stopPropagation();
         }
         const {app, options, container} = $this;
 

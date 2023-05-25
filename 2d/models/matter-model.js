@@ -3,6 +3,7 @@ import Container from '$core/container';
 import { Graphics, Point } from 'pixi.js';
 import { Body, Bodies, Vector } from 'matter-js';
 import { parse } from 'js-svg-path';
+import { between } from '$core/utils/math';
 const HALF_PI = Math.PI / 2;
 
 const ARRAY_ATTRIBUTES = ['axes', 'vertices', 'parts', ];
@@ -132,7 +133,7 @@ class Model extends Container {
         if (typeof val === 'object') {
             for (let key in val) {
                 if (Array.isArray(val[key]) && val[key].length === 2) {
-                    val[key] = Math.between(val[key][0], val[key][1]);
+                    val[key] = between(val[key][0], val[key][1]);
                 }
             }
         }
@@ -149,7 +150,7 @@ class Model extends Container {
                 }
 
                 if (Array.isArray(matter[key]) && matter[key].length === 2) {
-                    matter[key] = Math.between(matter[key][0], matter[key][1]);
+                    matter[key] = between(matter[key][0], matter[key][1]);
                 }
             }
         }

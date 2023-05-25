@@ -1,6 +1,4 @@
 import { createRouter, createWebHashHistory, createWebHistory  } from 'vue-router';
-import VueAxios from 'vue-axios';
-import axios from 'axios';
 
 const useRouter = (app, routes) => {   
     const router = createRouter({
@@ -10,7 +8,7 @@ const useRouter = (app, routes) => {
     });
     
     app.use(router);
-    app.use(VueAxios, axios);
+
 };
 
 export default useRouter;

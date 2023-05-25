@@ -1,5 +1,5 @@
 import { h, createApp  } from 'vue';
-import { usePlugins } from './plugins';
+//import { usePlugins } from './plugins';
 import useRouter from './router';
 
 const createGame = (App, routes = []) => {
@@ -8,7 +8,7 @@ const createGame = (App, routes = []) => {
     });
     usePlugins(app);
     useRouter(app, routes);
-    app.mount('#game-app');
+    app.mount('#app');
     return app;
 };
 export default {};

@@ -1,14 +1,14 @@
 /* global Promise */
 
 import Container from '$core/container';
-import { Composite, Engine, Render, Bodies, Runner, World } from 'matter-js';
+import { Composite, Engine, Runner } from 'matter-js';
 import { Application, Container as PixiContainer, Ticker } from 'pixi.js';
 
 import localforage from 'localforage';
-import { getKeyCode } from '$core/utils/events';
 import AppLoader from './loaders/loader';
 import FontLoader from './loaders/font-loader';
-import LocaleLoader from './loaders/locale-loader';
+
+import { isLandscape } from '$core/utils/window';
 
 const sizes = {
     width: window.innerWidth,
@@ -44,7 +44,7 @@ class GameMatter extends Container {
         const app = new Application(Object.assign({}, {
             width: this.options.world.size.width,
             height: this.options.world.size.height,
-            //resizeTo: this.container,
+            //resizeTo: window,
             resolution: Math.min(window.devicePixelRatio || 1, 2)
         }, this.options.app));
 
@@ -70,7 +70,8 @@ class GameMatter extends Container {
         Object.assign(this.app.renderer, this.options.renderer);
         Object.assign(this.app.stage, this.options.stage);
 
-        container.style.minHeight = `${app.renderer.height}px`;
+        //container.style.minHeight = `${Math.min(app.renderer.height, window.innerHeight)}px`;
+        // container.style.minWidth = `${Math.min(app.renderer.width, window.innerWidth)}px`;
         container.appendChild(this.app.view);
 
         this.app.stage.interactive = true;
@@ -91,7 +92,6 @@ class GameMatter extends Container {
     load() {
         const appLoader = new AppLoader;
         const fontLoader = new FontLoader;
-        const localeLoader = new LocaleLoader;
         appLoader.preload();
         fontLoader.load();
         
@@ -240,7 +240,6 @@ class GameMatter extends Container {
         }
         if (ev) {
             ev.stopPropagation();
-            ev.stopPropagation();
         }
         const {app, options, container} = $this;
 
@@ -251,21 +250,34 @@ class GameMatter extends Container {
     }
 
     resizeCanvas(ev) {
-        const {app, options, container, ui} = this;
+        const {app, container} = this;
         const {clientWidth: w, clientHeight: h} = container;
+        const {innerWidth: ww, innerHeight: wh} = window;
         const ratio = (app.renderer.width / app.renderer.height).toFixed(2);
 
-        if (w / h >= ratio) {
-            sizes.width = w / ratio;
-            sizes.height = h; 
+        if (isLandscape()) {
+            sizes.width = Math.min(w, ww);
+            sizes.height = Math.min(h, wh); 
+            sizes.angle = 0;
+            app.stage.position.set(0, 0); 
         } else {
-            sizes.width = w;
-            sizes.height = (w / ratio).toFixed(2);
+            sizes.width = Math.min(h, wh);
+            sizes.height = Math.min(w, ww); 
+            sizes.angle = 90;
+            app.stage.position.set(app.renderer.width/2, app.renderer.height/2); 
         }
-        
+
+
         app.view.style.width = `${sizes.width}px`;
         app.view.style.height = `${sizes.height}px`;
-        
+       // app.view.style.transform = `rotate(${sizes.angle}deg)`
+
+
+        //app.stage.pivot.set(app.screen.width / 2, app.screen.height / 2);
+        //app.stage.rotation = sizes.angle * (Math.PI / 180);
+
+        app.stage.rotation = sizes.angle * (Math.PI / 180);
+        app.stage.pivot.set(app.renderer.width/2, app.renderer.height/2); // camera coords, but i think in that case its same as screen center
         this.$emit('window_resize', ev);
     }
 

@@ -22,6 +22,7 @@ class FontLoader extends Container {
             }
 
             const font = new FontFaceObserver(family, data);
+            console.log(family);
             fonts.push(font.load().then(font => { 
                 this.$emit.bind(this, 'font_loaded', font, name);
                 fontsLoaded++;
