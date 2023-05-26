@@ -8,7 +8,7 @@ import localforage from 'localforage';
 import AppLoader from './loaders/loader';
 import FontLoader from './loaders/font-loader';
 
-import { isLandscape } from '$core/utils/window';
+import { isLandscape, isPortrait, LANDSCAPE, PORTRAIT } from '$core/utils/window';
 
 const sizes = {
     width: window.innerWidth,
@@ -24,8 +24,8 @@ let $this = null;
 class GameMatter extends Container {
     constructor(options) {
         super(options, true);
-        const { container} = this;
-        
+        const { container } = this;
+
         this.width = container.clientWidth;
         this.height = container.clientHeight;
         this.$set('layers', {});
@@ -39,7 +39,7 @@ class GameMatter extends Container {
         this.$set('settings', options.settings || {});
         window.addEventListener('orientationchange', this.onResize);
         window.addEventListener('resize', this.onResize);
-        
+
         this.fps = this.options.fps || 60;
         const app = new Application(Object.assign({}, {
             width: this.options.world.size.width,
@@ -49,10 +49,10 @@ class GameMatter extends Container {
         }, this.options.app));
 
         this.$set('app', app);
-        
+
         this.$set('scale', this.options.scale || 1);
-        
-        if(!this.$db) {
+
+        if (!this.$db) {
             this.$set('$db', localforage);
         }
 
@@ -79,7 +79,7 @@ class GameMatter extends Container {
         this.doResize = null;
         this.onResize();
         this.resizeCanvas();
-        
+
         this.$listen({
             loader: ['complete'],
             game: ['init', 'ready', 'destroy'],
@@ -94,7 +94,7 @@ class GameMatter extends Container {
         const fontLoader = new FontLoader;
         appLoader.preload();
         fontLoader.load();
-        
+
     }
     /**
      * @public
@@ -111,7 +111,7 @@ class GameMatter extends Container {
     ready() {
 
     }
-    
+
     build() {
 
     }
@@ -129,15 +129,15 @@ class GameMatter extends Container {
         this.$clear();
         this.app.loader.reset();
         this.app.ticker.stop();
-        
+
         Composite.clear(this.engine.world);
         Engine.clear(this.engine);
         Runner.stop(this.runner);
-        
-//        this.$set('world', null);
-//        this.$set('engine', null);
-//        this.$set('runner', null);
-        
+
+        //        this.$set('world', null);
+        //        this.$set('engine', null);
+        //        this.$set('runner', null);
+
         this.app.destroy(true, {
             children: true,
             texture: true,
@@ -155,7 +155,7 @@ class GameMatter extends Container {
             this.addGroup(object, layer);
             return;
         }
-        
+
         if (typeof layer === 'string') {
             if (!this.layers[layer]) {
                 this.layers[layer] = new PixiContainer;
@@ -171,13 +171,13 @@ class GameMatter extends Container {
 
         Composite.add(this.engine.world, object.body);
     }
-    
+
     addGroup(group, layer = null) {
-        
+
         for (let key in group.components) {
             this.add(group.components[key], layer);
         }
-        
+
         Composite.add(this.engine.world, group.constraints);
     }
 
@@ -199,13 +199,13 @@ class GameMatter extends Container {
             this.scene.removeChild(object.model);
         }
     }
-    
+
     removeGroup(group, layer) {
         for (let key in group.components) {
             this.remove(group.components[key], layer);
         }
     }
-    
+
     removeMultiple(items, layer = null) {
         for (let i in items) {
             this.remove(items[i], layer);
@@ -241,7 +241,7 @@ class GameMatter extends Container {
         if (ev) {
             ev.stopPropagation();
         }
-        const {app, options, container} = $this;
+        const { app, options, container } = $this;
 
         const canvas = app.view;
         clearTimeout($this.doResize);
@@ -250,34 +250,33 @@ class GameMatter extends Container {
     }
 
     resizeCanvas(ev) {
-        const {app, container} = this;
-        const {clientWidth: w, clientHeight: h} = container;
-        const {innerWidth: ww, innerHeight: wh} = window;
-        const ratio = (app.renderer.width / app.renderer.height).toFixed(2);
-
-        if (isLandscape()) {
-            sizes.width = Math.min(w, ww);
-            sizes.height = Math.min(h, wh); 
+        const { app, container, options } = this;
+        const world = options.world.size;
+        const { clientWidth: w, clientHeight: h } = container;
+        //const {innerWidth: w, innerHeight: h} = window;
+        const ratio = (options.world.size.width / options.world.size.height).toFixed(2);
+        console.log(app.renderer.width, app.screen.width)
+        if ((w / h) >= ratio) {
+            sizes.width = w / ratio;
+            sizes.height = h;
             sizes.angle = 0;
-            app.stage.position.set(0, 0); 
+            app.renderer.resize(app.screen.width, app.screen.width);
+            app.stage.pivot.set(0, 0);
+
         } else {
-            sizes.width = Math.min(h, wh);
-            sizes.height = Math.min(w, ww); 
+            sizes.width = w;
+            sizes.height = h / ratio;
             sizes.angle = 90;
-            app.stage.position.set(app.renderer.width/2, app.renderer.height/2); 
+            app.renderer.resize(app.screen.height, app.screen.height);
+            app.stage.pivot.set(0, app.screen.width);
         }
 
 
         app.view.style.width = `${sizes.width}px`;
         app.view.style.height = `${sizes.height}px`;
-       // app.view.style.transform = `rotate(${sizes.angle}deg)`
-
-
-        //app.stage.pivot.set(app.screen.width / 2, app.screen.height / 2);
-        //app.stage.rotation = sizes.angle * (Math.PI / 180);
-
+        //app.renderer.resize(sizes.width, sizes.height);
+        //app.stage.pivot.set(0, app.renderer.height);
         app.stage.rotation = sizes.angle * (Math.PI / 180);
-        app.stage.pivot.set(app.renderer.width/2, app.renderer.height/2); // camera coords, but i think in that case its same as screen center
         this.$emit('window_resize', ev);
     }
 
@@ -300,7 +299,7 @@ class GameMatter extends Container {
 
     registerMixin(mixin) {
         for (let attribute in mixin) {
-            
+
             if (typeof this[attribute] === 'function' && typeof mixin[attribute] === 'function') {
                 this.$on(attribute, (...args) => {
                     mixin[attribute].apply(this, args);
