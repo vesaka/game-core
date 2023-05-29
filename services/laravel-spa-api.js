@@ -8,6 +8,10 @@ class LaravelApi {
         axios.defaults.baseURL = options.url
         axios.defaults.withCredentials = true;
         axios.defaults.headers.common['Content-Type'] = 'application/json';
+
+        if(typeof options.headers === 'object' && null !== options.headers) {
+            Object.assign(axios.defaults.headers.common, options.headers);
+        }
         if(typeof options.params === 'object' && null !== options.params) {
             axios.defaults.params = options.params;
         }
@@ -24,7 +28,6 @@ class LaravelApi {
         if(typeof params === 'object' && null !== params) {
             axios.defaults.params = params;
         }
-        console.log(axios.defaults.params);
         return this;
     }
 
@@ -33,11 +36,7 @@ class LaravelApi {
     }
     
     static post(url, params = {}) {
-        return axios.post(url, params, { 
-            headers: {
-                //'Access-Control-Allow-Credentials': true,
-            }
-         });
+        return axios.post(url, params);
     }
     
     static async login(params) {
