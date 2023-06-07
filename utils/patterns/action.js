@@ -1,5 +1,5 @@
 class Action {
-    static add(tag, callback, priority = 10) {
+    static add(tag, callback, priority = 0) {
         if (!this[tag]){
             this[tag] = [];
         }
