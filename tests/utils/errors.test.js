@@ -46,20 +46,38 @@ describe('parse422', () => {
                 "email": ["required"],
                 "password": ["min:8"],
                 "name": ["max:255"],
-                "age": ["between:18,35"]
+                "age": ["between:18,35"],
+                "dimmensions": ["size:width=800,height=600"],
             }
         }
     };
     const errors = parse422(response);
-    it('should return formated error with one parameter', () => {
+    it('should return message tha minimum characters are required', () => {
         expect(errors.password).toBe(aprintf(t('messages.password.min'), [8]));
     });
 
-    it('should return formated error with two parameters', () => {
+    it('should return fmessage that age should be between 18 and 35', () => {
         expect(errors.age).toBe(aprintf(t('messages.age.between'), [18, 35]));
     });
 
-    // it('should return objects maped to error', () => {
-    //     expect(errors.dimmensions).toBe(aprintf(t('messages.dimmensions.size'), { width: 100, height: 200 }));
-    // });
+    it('should return that dimensions require 800x600 size', () => {
+        expect(errors.dimmensions).toBe(aprintf(t('messages.dimmensions.size'), { width: 800, height: 600 }));
+    });
+
+    it.each([
+        [{width: 800, height: 600}, '800x600'],
+        [{width: 1024, height: 768}, '1024x768'],
+        [{width: 1920, height: 1080}, '1920x1080'],
+    ])('should return that dimensions require %s size', (params) => {
+        const errors = parse422({
+            "status": 422,
+            "data": {
+                "errors": {
+                    "dimmensions": [`size:width=${params.width},height=${params.height}`],
+                }
+            }
+        });
+
+        expect(errors.dimmensions).toBe(aprintf(t('messages.dimmensions.size'), params));
+    });
 });
