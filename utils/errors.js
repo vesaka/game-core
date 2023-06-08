@@ -1,5 +1,4 @@
 import { t } from './i18n';
-import { isObject } from './object';
 import { aprintf } from './string';
 
 export const parse422 = (response) => {
@@ -11,7 +10,7 @@ export const parse422 = (response) => {
             const [rule, params] = errors[name][0].split(':'); 
             newErrors[name] = aprintf(t(`messages.${name}.${rule}`), parse(params));
         }
-        
+
         return newErrors;
     }
 
