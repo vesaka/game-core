@@ -6,12 +6,12 @@ export const parse422 = (response) => {
     if ((422 === response.status)) {
         const newErrors = {};
         const { errors } = response.data;
-        console.log(errors);
+
         for (let name in errors) {
             const [rule, params] = errors[name][0].split(':'); 
-            console.log(params?.split(','));
             newErrors[name] = aprintf(t(`messages.${name}.${rule}`), parse(params));
         }
+        
         return newErrors;
     }
 
@@ -30,10 +30,11 @@ const parse = (params) => {
     }
 
     if (params.match(/^(\w+)=(\w+)(?:,(\w+)=(\w+))*$/)) {
-        return params.split(',').map((param) => {
+        return params.split(',').reduce((acc, param) => {    
             const [key, value] = param.split('=');
-            return { [key]: value };
-        });
+            acc[key] = value;
+            return acc;
+        }, {});
     }
 
     return [];
