@@ -6,10 +6,20 @@ const FORMATS = {
     mp3: 'audio/mp3',
     wav: 'audio/mp3'
 };
+
+let audio;
+
 class AudioLoader extends ThreeAudioLoader {
     load(url, onLoad, onProgress, onError) {
-        if (this.canPlay()) {
+        const matches = url.match(/\{([a-z,]+)\}$/);
+        const formats = matches[1].split(',');
+        const audio = document.createElement('audio');
 
+        for(const format of formats) {
+            if (audio.canPlayType(FORMATS[format])) {
+                url = url.replace(matches[0], format);
+                break;
+            }
         }
 
         super.load(url, onLoad, onProgress, onError);
