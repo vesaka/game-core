@@ -20,7 +20,6 @@ class Model extends Container {
         this.model = this.createModel();
         
         this.getRotation()
-        //this.body.quaternion.setFromAxisAngle(this.getRotation(), HALF_PI);
         this.model.position.copy(this.body.position);
         return this;
     }
