@@ -2,6 +2,7 @@ import Container from '$core/container';
 
 import { Mesh, MeshBasicMaterial, BoxBufferGeometry } from 'three';
 import { World, Body, Box, Vec3, Material, ContactMaterial } from 'cannon-es';
+import { deepGet, extend, isObject } from '$core/utils/object';
 
 const HALF_PI = Math.PI / 2;
 class Model extends Container {
@@ -9,8 +10,8 @@ class Model extends Container {
     static defaulMaterial = new Material('physics');
     constructor (options) {
         super(options);
-        Object.assign(this, options);
-        
+        //Object.assign(this, options);
+        console.log(this.$name);
         let filterMethod;
         for (let attribute in options) {
             filterMethod = `filter_${attribute}`;
